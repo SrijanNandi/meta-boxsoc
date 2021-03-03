@@ -1,0 +1,65 @@
+#!/bin/sh
+
+INT_NAME_COUNT=`sudo /sbin/ip link | sudo awk -F: '$0 !~ "lo|vir|wl|^[^0-9]"{print $2;getline}' | sudo sort | sudo uniq -D -w3 | sudo wc -l`
+PROC_COUNT=`sudo /usr/bin/nproc --all`
+MEMORY=`sudo /usr/bin/free -m | awk '/^Mem:/{print $2}'`
+
+function min_requirements {
+    if [ "$INT_NAME_COUNT" -le "0" ]; then
+        echo
+    	echo "Minimun 2 Interfaces required to run IPS Engine"
+    	exit
+    fi
+
+    if [ "$PROC_COUNT" -le "2" ]; then
+        echo
+	echo "Cores Detected: "$PROC_COUNT". Minimum 3 cores are required to start the IPS Engine"
+	exit
+    fi
+
+    if [ "$MEMORY" -lt "2048" ]; then
+        echo
+	echo "IPS Engine requires *AT LEAST* 4GB of RAM. Current Memory is: $MEMORY"
+	exit
+    fi
+}
+
+if sudo ps aux | sudo grep "suricata" | sudo grep -v 'grep\|vi\|vim' >/dev/null; then
+        read -p "IPS Engine is currently enabled. Would you like to disable? [y/n]? " yn
+        case $yn in
+            [Yy]* ) if [[ `sudo systemctl is-enabled suricata` = "enabled" ]]; then
+                        sudo systemctl disable suricata >/dev/null 2>&1
+                    else
+                        :
+                    fi 
+		    sudo systemctl stop suricata
+		    sudo sleep 2
+		    ;;
+            [Nn]* ) 
+		    exit
+		    ;;
+            * ) 
+		    echo "Please answer y or n."
+		    ;;
+         esac
+else
+        read -p "IPS Engine is currently disabled. Would you like to enable? [y/n]? " yn
+        case $yn in
+            [Yy]* ) 
+		    min_requirements
+		    if [[ `sudo systemctl is-enabled suricata` = "disabled" ]]; then
+                        sudo systemctl enable suricata >/dev/null 2>&1
+                    else
+                        :
+                    fi
+		    sudo systemctl start suricata
+		    sudo sleep 2
+		    ;;
+            [Nn]* ) 
+		    exit
+		    ;;
+            * ) 
+		    echo "Please answer y or n."
+		    ;;
+    esac
+fi

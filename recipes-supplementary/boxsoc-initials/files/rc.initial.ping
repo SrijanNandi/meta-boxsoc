@@ -1,0 +1,26 @@
+#!/bin/sh
+
+function ping_host {
+	echo
+	read -p "Enter a host name or IP Address: " ADDRESS
+	ping -c 4 -n ${ADDRESS}
+}
+
+ping_host
+echo
+
+while : ; do
+    read -p "Do you wish to continue (y/n)?" YN
+    case $YN in
+        [Yy]* )
+	    ping_host
+            echo	    
+	    ;;
+        [Nn]* ) 
+	    exit
+	    ;;
+        * ) 
+	    exit
+	    ;;
+    esac
+done

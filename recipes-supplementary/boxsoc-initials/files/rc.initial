@@ -1,0 +1,90 @@
+#!/bin/sh
+
+### Disable CTRL+C and CRTL+Z command ########
+trap '' 2 20
+
+# endless loop
+while : ; do
+
+# Check to see if SSH is running.
+if /usr/bin/pgrep -a -F /var/run/sshd.pid sshd >/dev/null 2>&1; then
+	SSHD_OPTION=" 9) Disable Secure Shell (sshd)"
+else
+	SSHD_OPTION=" 9) Enable Secure Shell (sshd)"
+fi
+
+#Check to see if IPS Engine is running.
+if /bin/ps aux | grep "suricata" | grep -v 'grep\|vi\|vim' >/dev/null; then
+	IPS_OPTION="11) Stop IPS Engine"
+else
+	IPS_OPTION="11) Start IPS ENGINE"
+fi
+
+# display a cheap menu
+echo ""
+echo -e " 0) Logout (SSH only)                 ${SSHD_OPTION}"
+echo -e " 1) Show Interfaces                   10) Update IPS signatures"
+echo -e " 2) Set interface(s) IP address       ${IPS_OPTION}"
+echo -e " 3) Reset boxsocadmin password         12) Show routing table"
+echo -e " 4) Reset root password               "
+echo -e " 5) Reboot system                     "
+echo -e " 6) Halt system                       "
+echo -e " 7) Ping host                         "
+echo -e " 8) Shell (Enter With CAUTION)"
+
+echo
+read -p "Enter an option: " OPMODE
+echo
+
+# see what the user has chosen
+case ${OPMODE} in
+0)
+	exit && exit && logout
+	;;
+1)
+	/etc/rc.initial.showports
+	;;
+2)
+	/etc/rc.initial.setinterfaceip
+	;;
+3)
+        sudo /usr/bin/passwd boxsocadmin	
+	;;
+4)
+	sudo /usr/bin/passwd root
+	;;
+5)
+	sudo /sbin/shutdown -r now
+	;;
+6)
+	sudo /sbin/shutdown -h now
+	;;
+7)
+	sudo /etc/rc.initial.ping
+	;;
+8)
+	/bin/bash
+	;;
+9)
+	/etc/rc.initial.toggle_sshd
+	;;
+10)     
+	sudo /usr/bin/suricata-update -c /etc/suricata/update.yaml --no-merge
+	;;
+11)     
+	/etc/rc.initial.toggle_ips
+	;;
+12)     
+	/sbin/route -nv
+	;;
+"")
+	sudo ps -o command='' -c -p $PPID > /dev/null
+	if [ $? -eq 0 ]; then
+		exit
+	else
+		kill $PPID ; exit
+	fi
+	;;
+esac
+
+done

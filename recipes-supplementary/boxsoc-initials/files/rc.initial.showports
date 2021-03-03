@@ -1,0 +1,24 @@
+#!/bin/sh
+
+INT_NAME=`/sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/awk '{ sub(/^[ \t]+/, ""); print }' | /usr/bin/sort`
+
+declare -a array=($(echo "$INT_NAME"))
+
+function interface_spec() {
+	for ((i=0; i<${#array[@]}; i+=1)); do
+		MAC_ADDR=`/bin/cat /sys/class/net/${array[$i]}/address`
+		#STATE=`/bin/cat /sys/class/net/${array[$i]}/operstate`
+		CARRIER=`/bin/cat /sys/class/net/${array[$i]}/carrier`
+	            if [[ "$CARRIER" == "0" ]]; then
+		        CARRIER_STATE="physical link is down"
+	            else
+		        CARRIER_STATE="physical link is up"
+	            fi
+		echo -e "${array[$i]}\t\t\t$CARRIER_STATE\t$MAC_ADDR"
+	done
+}
+
+echo
+echo -e "\033[4mInterface\033[0m\t\t\033[4mState\033[0m\t\t\t\033[4mMac_Address\033[0m"
+interface_spec
+echo
