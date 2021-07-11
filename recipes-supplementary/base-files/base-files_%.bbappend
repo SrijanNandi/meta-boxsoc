@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
+hostname="boxsoc"
+
 SRC_URI += "file://motd \
             file://profile \
            "
