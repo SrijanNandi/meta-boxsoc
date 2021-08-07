@@ -120,5 +120,10 @@ sed -i "s/root_password_sha2 =/root_password_sha2 = ${ROOT_PWD}/g" ${GRAYLOG_CON
 
 logger "Configuration done"
 
+## Initial Selection
+
+echo -n ""
+
+
 ## Job done, remove it from systemd services
 systemctl disable initscript.service

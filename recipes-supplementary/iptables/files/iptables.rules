@@ -24,6 +24,8 @@
 -A INPUT -p icmp -m limit --limit 1/sec -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 2224 -m conntrack --ctstate NEW -j ACCEPT
 -A INPUT -p tcp -m tcp --dport 9000 -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
 -A FORWARD -m conntrack --ctstate INVALID -j DROP
 -A FORWARD -m conntrack --ctstate NEW,RELATED,ESTABLISHED -j ACCEPT
 -A OUTPUT -m conntrack --ctstate INVALID -j DROP
