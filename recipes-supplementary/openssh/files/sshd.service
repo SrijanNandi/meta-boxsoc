@@ -1,0 +1,22 @@
+[Unit]
+Description=OpenSSH server daemon
+Documentation=man:sshd(8) man:sshd_config(5)
+After=network.target sshdgenkeys.service
+Wants=sshdgenkeys.service
+
+[Service]
+Type=simple
+PIDFile=/var/run/sshd.pid
+EnvironmentFile=/etc/default/sshd
+ExecStart=/usr/sbin/sshd -f /etc/ssh/sshd_config
+ExecReload=/bin/kill -HUP $MAINPID
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/run/sshd
+ExecStartPre=/bin/chmod -R 755 /var/run/sshd
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
+

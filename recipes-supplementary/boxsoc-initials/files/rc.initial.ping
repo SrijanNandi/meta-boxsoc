@@ -3,7 +3,11 @@
 function ping_host {
 	echo
 	read -p "Enter a host name or IP Address: " ADDRESS
-	ping -c 4 -n ${ADDRESS}
+	if [ "$EUID" -ne 0 ]
+	    sudo ping -c 4 -n ${ADDRESS}
+	else
+	    ping -c 4 -n ${ADDRESS}
+	fi
 }
 
 ping_host

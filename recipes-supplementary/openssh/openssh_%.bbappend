@@ -11,6 +11,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://sshd \
             file://sshd.socket \
+            file://sshd.service \
            "
 do_install_append () {
         sed -i 's/#Port 22/Port 2224/' ${D}${sysconfdir}/ssh/sshd_config
@@ -31,6 +32,7 @@ do_install_append () {
          if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
             install -d ${D}${systemd_system_unitdir}
             install -c -m 0644 ${WORKDIR}/sshd.socket  ${D}${systemd_system_unitdir}
+            install -c -m 0644 ${WORKDIR}/sshd.service ${D}${systemd_system_unitdir}
             sed -i -e 's,@BASE_BINDIR@,${base_bindir},g' \
                 -e 's,@SBINDIR@,${sbindir},g' \
                 -e 's,@BINDIR@,${bindir},g' \
