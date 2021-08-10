@@ -17,8 +17,8 @@ SRC_URI = "https://downloads.graylog.org/releases/${BPN}/${BPN}-${PV}.tgz \
            file://log4j2.xml \
            "
 
-SRC_URI[md5sum] = "57dae4787f09a704fe4c821b839c226b"
-SRC_URI[sha256sum] = "4b1c7b5a67a0b3cd84838d9cf977efe2ec653d0b8d458800df6d20deb336e5f9"
+SRC_URI[md5sum] = "979f9d1fdd1502001886a7a5f5e89118"
+SRC_URI[sha256sum] = "516b32cc3f6888bbbdedfa1c3d722a5413da658257de6be7eb9adf2fb404ac83"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
