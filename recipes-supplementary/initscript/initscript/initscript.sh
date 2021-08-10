@@ -312,7 +312,7 @@ systemctl disable initscript.service
 
 swap_size=`sudo swapon -s | tail -n 1 | awk '{ print $3 }'`
 
-if [ $swap_size -eq 0 ]; then
+if [ $swap_size -eq 1000 ]; then
 	sudo swapoff --all
 	sudo sed -e '/swap/ s/^#*/#/' -i /etc/fstab
         sudo shutdown -r now
