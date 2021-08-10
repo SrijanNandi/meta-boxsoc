@@ -302,18 +302,18 @@ case $im in
 		;;
 esac
 
+############################################
+
+## Job done, remove it from systemd services
+systemctl disable initscript.service
+
+
 ## Disable swap if swap memory allocated is 0 (zero)
 
-swap_mem=`sudo swapon -s | tail -n 1 | awk '{ print $3 }'`
+swap_size=`sudo swapon -s | tail -n 1 | awk '{ print $3 }'`
 
 if [ $swap_size -eq 0 ]; then
 	sudo swapoff --all
 	sudo sed -e '/swap/ s/^#*/#/' -i /etc/fstab
         sudo shutdown -r now
 fi
-
-
-############################################
-
-## Job done, remove it from systemd services
-systemctl disable initscript.service
