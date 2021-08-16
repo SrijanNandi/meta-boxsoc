@@ -25,6 +25,7 @@ do_install() {
     install -c -m 0755 ${WORKDIR}/rc.initial.setinterfaceip ${D}${sysconfdir}/rc.initial.setinterfaceip
     install -c -m 0755 ${WORKDIR}/rc.initial.toggle_sshd ${D}${sysconfdir}/rc.initial.toggle_sshd
     install -c -m 0755 ${WORKDIR}/rc.initial.config ${D}${sysconfdir}/rc.initial.config
+    install -d ${D}${sysconfdir}/profile.d
     install -c -m 0755 ${WORKDIR}/initial_run.sh ${D}${sysconfdir}/profile.d/initial_run.sh
 }
 
