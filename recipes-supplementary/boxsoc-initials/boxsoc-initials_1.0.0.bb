@@ -10,6 +10,7 @@ SRC_URI = "file://rc.initial \
            file://rc.initial.toggle_sshd \
            file://rc.initial.setinterfaceip \
            file://rc.initial.config \
+           file://initial_run.sh \
           "
 
 do_compile() {
@@ -24,6 +25,7 @@ do_install() {
     install -c -m 0755 ${WORKDIR}/rc.initial.setinterfaceip ${D}${sysconfdir}/rc.initial.setinterfaceip
     install -c -m 0755 ${WORKDIR}/rc.initial.toggle_sshd ${D}${sysconfdir}/rc.initial.toggle_sshd
     install -c -m 0755 ${WORKDIR}/rc.initial.config ${D}${sysconfdir}/rc.initial.config
+    install -c -m 0755 ${WORKDIR}/initial_run.sh ${D}${sysconfdir}/profile.d/initial_run.sh
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
