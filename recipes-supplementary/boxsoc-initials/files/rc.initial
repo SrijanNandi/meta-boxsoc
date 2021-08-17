@@ -55,7 +55,7 @@ echo -e " 4) Reset root password               "
 echo -e " 5) Reboot system                     "
 echo -e " 6) Halt system                       "
 echo -e " 7) Ping host                         "
-echo -e " 8) Shell (Enter With CAUTION)        17) Inital Configuration (First Time)"
+echo -e " 8) Shell (Enter With CAUTION)        "
 
 echo
 read -p "Enter an option: " OPMODE
@@ -101,9 +101,6 @@ case ${OPMODE} in
 	;;
 12)     
 	/sbin/route -nv
-	;;
-17)     
-	/etc/rc.initial.config
 	;;
 "")
 	sudo ps -o command='' -c -p $PPID > /dev/null
