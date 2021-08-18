@@ -30,7 +30,7 @@ function interface_spec() {
 		MAC_ADDR=`/bin/cat /sys/class/net/${array[$i]}/address`
 		#STATE=`/bin/cat /sys/class/net/${array[$i]}/operstate`
 		CARRIER=`/bin/cat /sys/class/net/${array[$i]}/carrier`
-		IP_ADDR=`ifconfig ${array[$i]} 2>/dev/null | awk '/inet / {print $2}'`
+		IP_ADDR=`/sbin/ifconfig ${array[$i]} 2>/dev/null | awk '/inet / {print $2}'`
 	            if [[ "$CARRIER" == "0" ]]; then
 		        CARRIER_STATE="physical link is down"
 	            else
@@ -67,10 +67,10 @@ case ${OPMODE} in
 	exit && exit && logout
 	;;
 1)
-	/etc/rc.initial.showports
+	sudo /etc/rc.initial.showports
 	;;
 2)
-	/etc/rc.initial.setinterfaceip
+	sudo /etc/rc.initial.setinterfaceip
 	;;
 3)
         sudo /usr/bin/passwd boxsocadmin	
