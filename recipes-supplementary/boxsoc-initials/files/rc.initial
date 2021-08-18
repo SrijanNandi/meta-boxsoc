@@ -102,6 +102,9 @@ case ${OPMODE} in
 12)     
 	/sbin/route -nv
 	;;
+99)     
+        sudo sh /etc/rc.initial.config
+	;;
 "")
 	sudo ps -o command='' -c -p $PPID > /dev/null
 	if [ $? -eq 0 ]; then
