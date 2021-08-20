@@ -1,5 +1,35 @@
 #!/bin/sh
 
+function enable_sshd_iptables_rule {
+        iptables_rules_path=/etc/iptables/iptables.rules
+
+        sshd_rule=`grep -hrne "-A INPUT -p tcp -m tcp --dport 2224 -m conntrack --ctstate NEW -j ACCEPT" $iptables_rules_path > /dev/null 2>&1`
+
+        if [ "$?" -eq 0 ] && [ -z "$sshd_rule" ]; then
+                :
+        else
+                https_rule=`grep -hrne "-A INPUT -p tcp -m tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT" $iptables_rules_path  > /dev/null 2>&1`
+                if [ "$?" -eq 0 ] && [ -z "$https_rule" ]; then
+                        rule_num=`grep -hrne "-A INPUT -p tcp -m tcp --dport 443 -m conntrack --ctstate NEW -j ACCEPT" $iptables_rules_path | awk -F: '{print $1}'`
+			sed -i "$((rule_num))i -A INPUT -p tcp -m tcp --dport 2224 -m conntrack --ctstate NEW -j ACCEPT" $iptables_rules_path
+                        /usr/sbin/iptables-restore < $iptables_rules_path
+                fi
+        fi
+}
+
+function disable_sshd_iptables_rule {
+        iptables_rules_path=/etc/iptables/iptables.rules
+
+        sshd_rule=`grep -hrne "-A INPUT -p tcp -m tcp --dport 2224 -m conntrack --ctstate NEW -j ACCEPT" $iptables_rules_path > /dev/null 2>&1`
+
+        if [ "$?" -eq 0 ] && [ -z "$sshd_rule" ]; then
+                sed -i '/-A INPUT -p tcp -m tcp --dport 2224 -m conntrack --ctstate NEW -j ACCEPT/d' $iptables_rules_path
+                /usr/sbin/iptables-restore < $iptables_rules_path
+        else
+                :
+        fi
+}
+
 if sudo pgrep -a -F /var/run/sshd.pid sshd >/dev/null 2>&1; then
         read -p "SSHD is currently enabled. Would you like to disable? [y/n]? " yn
         case $yn in
@@ -10,6 +40,7 @@ if sudo pgrep -a -F /var/run/sshd.pid sshd >/dev/null 2>&1; then
 		    fi
 		    sudo systemctl stop sshd
 		    sudo sleep 2
+		    disable_sshd_iptables_rule
 		    ;;
             [Nn]* ) exit
 		    ;;
@@ -26,6 +57,7 @@ else
 	            fi
 		    sudo systemctl start sshd
 		    sudo sleep 2
+		    enable_sshd_iptables_rule
 		    ;;
             [Nn]* ) exit
 		    ;;
