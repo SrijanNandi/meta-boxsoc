@@ -67,7 +67,7 @@ case ${OPMODE} in
 	exit && exit && logout
 	;;
 1)
-	sudo /etc/rc.initial.showports
+	sudo sh /etc/rc.initial.showports
 	;;
 2)
 	sudo /etc/rc.initial.setinterfaceip
@@ -85,7 +85,7 @@ case ${OPMODE} in
 	sudo /sbin/shutdown -h now
 	;;
 7)
-	sudo /etc/rc.initial.ping
+	sudo sh /etc/rc.initial.ping
 	;;
 8)
 	/bin/bash
