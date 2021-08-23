@@ -91,13 +91,13 @@ case ${OPMODE} in
 	/bin/bash
 	;;
 9)
-	/etc/rc.initial.toggle_sshd
+	sudo sh /etc/rc.initial.toggle_sshd
 	;;
 10)     
 	sudo /usr/bin/suricata-update -c /etc/suricata/update.yaml --no-merge
 	;;
 11)     
-	/etc/rc.initial.toggle_ips
+	sudo sh /etc/rc.initial.toggle_ips
 	;;
 12)     
 	/sbin/route -nv
