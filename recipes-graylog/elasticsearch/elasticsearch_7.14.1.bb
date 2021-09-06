@@ -2,7 +2,7 @@ SUMMARY = "Elasticsearch"
 DESCRIPTION = "Elasticsearch"
 HOMEPAGE = "https://www.elastic.co"
 LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=d25a1b054a0b0fbeb3def5a0ff50d01e"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=42631b1af161defcf4844fb1e26cfc70"
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 DEPENDS = "openjdk-8"
@@ -20,8 +20,8 @@ SRC_URI = "https://artifacts.elastic.co/downloads/${BPN}/${BPN}-${PV}-linux-x86_
            file://elasticsearch.service \
            "
 
-SRC_URI[md5sum] = "e7b6fc9ab48e7de333f1916806924488"
-SRC_URI[sha256sum] = "ee38a952219b5247e0670532d6de31707d42a4b58aca49b28bddf37aab53c2e4"
+SRC_URI[md5sum] = "5be8909380888072649f16cf120f0e1e"
+SRC_URI[sha256sum] = "88fea9c583cdffc5f216b5204902732d4828d29675be2fabcce319ee70b759fd"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
