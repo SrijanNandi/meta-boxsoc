@@ -1,0 +1,11 @@
+# JVM Heap Settings
+#
+# It's recommended to set both values to the same size to avoid stop-the-world
+# GC pauses during resize.
+-Xms1g
+-Xmx1g
+
+# General JVM Settings
+#
+# Ensure full stack traces for debugging
+-XX:-OmitStackTraceInFastThrow
