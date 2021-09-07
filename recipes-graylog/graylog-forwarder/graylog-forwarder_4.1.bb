@@ -7,7 +7,7 @@ REQUIRED_DISTRO_FEATURES = "systemd"
 DEPENDS = "openjdk-8"
 RDEPENDS_${PN} += "bash"
 
-SRC_URI = "https://downloads.graylog.org/releases/cloud/forwarder/${PV}/${PN}-${PV}-bin.tar.gz \
+SRC_URI = "https://downloads.graylog.org/releases/cloud/forwarder/${PV}/${BPN}-${PV}-bin.tar.gz \
            file://graylog-forwarder.jar \
            file://jvm.options \
            file://log4j2.xml \
@@ -19,7 +19,7 @@ SRC_URI = "https://downloads.graylog.org/releases/cloud/forwarder/${PV}/${PN}-${
 SRC_URI[md5sum] = "77795b025f07f9dc9654dfa8d7a238f9"
 SRC_URI[sha256sum] = "d63f3558fc692e68712e563cad55414d6532c285b2d72a627ff74e9e05bfec5e"
 
-S = "${WORKDIR}/${PN}-${PV}"
+S = "${WORKDIR}/${BPN}-${PV}"
 
 inherit autotools systemd pkgconfig useradd features_check
 
@@ -33,7 +33,7 @@ USERADD_PARAM_${PN} = " \
     ${PN}"
 
 
-SYSTEMD_PACKAGES += "${PN}"
+SYSTEMD_PACKAGES += "${BPN}"
 SYSTEMD_SERVICE_${PN} = "graylog-forwarder.service"
 
 do_compile() {
