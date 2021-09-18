@@ -3,7 +3,7 @@ DESCRIPTION = "The rc.initial files package creates the initial menu option for 
 SECTION = "base"
 LICENSE = "CLOSED"
 PV = "1.0.0"
-PR = "r.1"
+PR = "r.2"
 
 SRC_URI = "file://rc.initial \
            file://rc.initial.toggle_ips \

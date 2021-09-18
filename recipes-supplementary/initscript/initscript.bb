@@ -1,7 +1,8 @@
 SUMMARY = "Initial boot script"
 DESCRIPTION = "Script to do any first boot init, started as a systemd service which removes itself once finished"
 LICENSE = "CLOSED"
-PR = "r3"
+PV = "1.0.0"
+PR = "r4"
 
 SRC_URI =  " \
     file://initscript.sh \
