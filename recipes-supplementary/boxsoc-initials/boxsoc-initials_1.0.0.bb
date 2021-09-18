@@ -1,7 +1,9 @@
 SUMMARY = "Miscellaneous files for BoxSoc initial subsystem"
 DESCRIPTION = "The rc.initial files package creates the initial menu option for BoxSoc"
 SECTION = "base"
-LICENSE="CLOSED"
+LICENSE = "CLOSED"
+PV = "1.0.0"
+PR = "r.1"
 
 SRC_URI = "file://rc.initial \
            file://rc.initial.toggle_ips \
