@@ -8,7 +8,7 @@ DEPENDS = "openjdk-8"
 RDEPENDS_${PN} += "bash"
 
 SRC_URI = "https://downloads.graylog.org/releases/cloud/forwarder/${PV}/${BPN}-${PV}-bin.tar.gz \
-           file://graylog-forwarder.jar \
+           file://graylog-forwarder.jar;unpack=0 \
            file://jvm.options \
            file://log4j2.xml \
            file://graylog-forwarder \
