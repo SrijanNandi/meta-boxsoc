@@ -68,4 +68,4 @@ FILES_${PN} += "${libdir}/*"
 
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-INSANE_SKIP_graylog-${PN} += "already-stripped ldflags host-user-contaminated libdir"
+INSANE_SKIP_${PN} += "already-stripped ldflags host-user-contaminated libdir"
