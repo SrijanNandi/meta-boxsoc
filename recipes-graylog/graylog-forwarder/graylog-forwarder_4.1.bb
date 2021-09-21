@@ -5,7 +5,7 @@ LICENSE = "CLOSED"
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 DEPENDS = "openjdk-8"
-RDEPENDS_${PN} += "bash graylog"
+RDEPENDS_${PN} += "bash"
 
 SRC_URI = "https://downloads.graylog.org/releases/cloud/forwarder/${PV}/${BPN}-${PV}-bin.tar.gz \
            file://graylog-forwarder.jar;unpack=0 \
@@ -23,14 +23,14 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 inherit autotools systemd pkgconfig useradd features_check
 
-# USERADD_PACKAGES = "${PN}"
-# GROUPADD_PACKAGES = "${PN}"
-# GROUPADD_PARAM_${PN} = "graylog"
-# USERADD_PARAM_${PN} = " \
-#    --system --no-create-home \
-#    --shell /bin/false \
-#    -g graylog \
-#    graylog"
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PACKAGES = "${PN}"
+GROUPADD_PARAM_${PN} = "${PN}"
+USERADD_PARAM_${PN} = " \
+   --system --no-create-home \
+   --shell /bin/false \
+   -g ${PN} \
+   ${PN}"
 
 
 SYSTEMD_PACKAGES += "${BPN}"

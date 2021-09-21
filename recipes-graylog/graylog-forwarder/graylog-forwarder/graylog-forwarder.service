@@ -6,8 +6,8 @@ After=network-online.target
 
 [Service]
 Type=simple
-User=graylog
-Group=graylog
+User=graylog-forwarder
+Group=graylog-forwarder
 Restart=on-failure
 RestartSec=10
 LimitNOFILE=64000
