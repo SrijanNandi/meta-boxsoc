@@ -23,14 +23,14 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 inherit autotools systemd pkgconfig useradd features_check
 
-USERADD_PACKAGES = "${PN}"
-GROUPADD_PACKAGES = "${PN}"
-GROUPADD_PARAM_${PN} = "graylog"
-USERADD_PARAM_${PN} = " \
-    --system --no-create-home \
-    --shell /bin/false \
-    -g graylog \
-    graylog"
+# USERADD_PACKAGES = "${PN}"
+# GROUPADD_PACKAGES = "${PN}"
+# GROUPADD_PARAM_${PN} = "graylog"
+# USERADD_PARAM_${PN} = " \
+#    --system --no-create-home \
+#    --shell /bin/false \
+#    -g graylog \
+#    graylog"
 
 
 SYSTEMD_PACKAGES += "${BPN}"
@@ -69,4 +69,4 @@ FILES_${PN} += "${libdir}/*"
 
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-INSANE_SKIP_${PN} += "already-stripped ldflags host-user-contaminated libdir"
+INSANE_SKIP_${PN} += "already-stripped ldflags host-user-contaminated libdir arch"
