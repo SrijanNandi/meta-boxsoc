@@ -5,7 +5,7 @@ LICENSE = "CLOSED"
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 DEPENDS = "openjdk-8"
-RDEPENDS_${PN} += "bash"
+RDEPENDS_${PN} += "bash graylog"
 
 SRC_URI = "https://downloads.graylog.org/releases/cloud/forwarder/${PV}/${BPN}-${PV}-bin.tar.gz \
            file://graylog-forwarder.jar;unpack=0 \
@@ -50,6 +50,7 @@ do_install() {
         install -c -m 0644 ${WORKDIR}/graylog-forwarder.jar ${D}${datadir}/${PN}
         install -c -m 0755 ${WORKDIR}/graylog-forwarder ${D}${datadir}/${PN}/bin
         chown -R graylog:graylog ${D}${sysconfdir}/graylog/${PN}
+        chown -R graylog:graylog ${D}${localstatedir}/lib/${PN}
         chown -R graylog:graylog ${D}${localstatedir}/log/${PN}
         chown -R graylog:graylog ${D}${datadir}/${PN}
 
