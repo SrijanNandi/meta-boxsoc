@@ -23,14 +23,14 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 inherit autotools systemd pkgconfig useradd features_check
 
-USERADD_PACKAGES = "graylog"
-GROUPADD_PACKAGES = "graylog"
-GROUPADD_PARAM_${PN} = "graylog"
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PACKAGES = "${PN}"
+GROUPADD_PARAM_${PN} = "${PN}"
 USERADD_PARAM_${PN} = " \
     --system --no-create-home \
     --shell /bin/false \
-    -g graylog \
-    graylog"
+    -g ${PN} \
+    ${PN}"
 
 
 SYSTEMD_PACKAGES += "${BPN}"
