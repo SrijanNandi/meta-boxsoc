@@ -23,8 +23,8 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 inherit autotools systemd pkgconfig useradd features_check
 
-USERADD_PACKAGES = "graylog"
-GROUPADD_PACKAGES = "graylog"
+USERADD_PACKAGES = "${PN}"
+GROUPADD_PACKAGES = "${PN}"
 GROUPADD_PARAM_${PN} = "graylog"
 USERADD_PARAM_${PN} = " \
     --system --no-create-home \
@@ -49,9 +49,9 @@ do_install() {
         install -c -m 0644 ${WORKDIR}/log4j2.xml ${D}${sysconfdir}/graylog/${PN}
         install -c -m 0644 ${WORKDIR}/graylog-forwarder.jar ${D}${datadir}/${PN}
         install -c -m 0755 ${WORKDIR}/graylog-forwarder ${D}${datadir}/${PN}/bin
-        chown -R graylog-forwarder:graylog-forwarder ${D}${sysconfdir}/graylog/${PN}
-        chown -R graylog-forwarder:graylog-forwarder ${D}${localstatedir}/log/${PN}
-        chown -R graylog-forwarder:graylog-forwarder ${D}${datadir}/${PN}
+        chown -R graylog:graylog ${D}${sysconfdir}/graylog/${PN}
+        chown -R graylog:graylog ${D}${localstatedir}/log/${PN}
+        chown -R graylog:graylog ${D}${datadir}/${PN}
 
          if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
             install -d ${D}${systemd_system_unitdir}
