@@ -1,128 +1,222 @@
-#!/bin/sh
+#!/bin/bash
 
-INT_NAME=`/sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/awk '{ sub(/^[ \t]+/, ""); print }' | /usr/bin/sort`
+INT_NAME=`sudo /sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/awk '{ sub(/^[ \t]+/, ""); print }' | /usr/bin/sort`
+INT_NAME_COUNT=`sudo /sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/sort | /usr/bin/wc -l`
+INT_WAN_COUNT=`sudo /usr/bin/find /etc/systemd/network -name "*.wan*" | /usr/bin/awk -F/ '{ print $NF }' | cut -d. -f1 | wc -l`
+INT_LAN_COUNT=`sudo /usr/bin/find /etc/systemd/network -name "*.lan*" | /usr/bin/awk -F/ '{ print $NF }' | cut -d. -f1 | wc -l`
 
 declare -a array=($(echo "$INT_NAME"))
 
-function interface_spec() {
+function interface_spec {
 	for ((i=0; i<${#array[@]}; i+=1)); do
 		echo -e -n "$(($i + 1))"; echo -e -n ") "
 		MAC_ADDR=`/bin/cat /sys/class/net/${array[$i]}/address`
 		STATE=`/bin/cat /sys/class/net/${array[$i]}/operstate`
 		CARRIER=`/bin/cat /sys/class/net/${array[$i]}/carrier`
-	            if [ "$CARRIER" -eq "0" ]; then
-		        CARRIER_STATE="physical link is down"
-	            else
-		        CARRIER_STATE="physical link is up"
-	            fi
+            	if [ "$CARRIER" -eq "0" ]; then
+			CARRIER_STATE="physical link is down"
+            	else
+	        	CARRIER_STATE="physical link is up"
+           	fi
 		echo -e "${array[$i]}\t\t\t$CARRIER_STATE\t$MAC_ADDR"
 	done
 }
 
-function wan_interface_file() {
-	echo -e "1) Static"
-	echo -e "2) Dynamic (DHCP)"
-	echo -e "3) None"
-	read -p "Enter the number for the configuration type on WAN: " CONF_TYPE
-	case $CONF_TYPE in
-		[1]* )
-			read -p "Enter the WAN IP Address with subnet mask: " WAN_IP
-			read -p "Enter the Default Gateway: " WAN_GATEWAY
-			read -p "Enter a DNS Address: " WAN_DNS
-			cat << 'EOF' > /tmp/${array[$i]}.network
+function mgmt_interface_file {
+echo -e "1) Static"
+echo -e "2) Dynamic (DHCP)"
+echo
+read -p "Enter the number for the configuration type on Management Interface: " CONF_TYPE
+case $CONF_TYPE in
+	[1]* )
+		read -p "Enter the MGMT IP Address with subnet mask: " MGMT_IP
+		read -p "Enter the Default Gateway: " MGMT_GATEWAY
+		read -p "Enter a DNS Address: " MGMT_DNS
+		cat << 'EOF' > /tmp/${array[$i]}.network
 [Match]
 Name=INTERFACE_NAME
 KernelCommandLine=!nfsroot
-
 [Network]
 INTERFACE_ADDRESS
 INTERFACE_GATEWAY
 INTERFACE_DNS
-
 EOF
-			sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-			sed -i "s~INTERFACE_ADDRESS~Address=$WAN_IP~g" "/tmp/${array[$i]}.network"
-			sed -i "s/INTERFACE_GATEWAY/Gateway=$WAN_GATEWAY/g" "/tmp/${array[$i]}.network"
-			sed -i "s/INTERFACE_DNS/DNS=$WAN_DNS/g" "/tmp/${array[$i]}.network"
-			;;
-		[2]* )
-			cat << 'EOF' > /tmp/${array[$i]}.network
+		sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+		sed -i "s~INTERFACE_ADDRESS~Address=$MGMT_IP~g" "/tmp/${array[$i]}.network"
+		sed -i "s/INTERFACE_GATEWAY/Gateway=$MGMT_GATEWAY/g" "/tmp/${array[$i]}.network"
+		sed -i "s/INTERFACE_DNS/DNS=$MGMT_DNS/g" "/tmp/${array[$i]}.network"
+		;;
+	[2]* )
+		cat << 'EOF' > /tmp/${array[$i]}.network
 [Match]
 Nane=INTERFACE_NAME
 KernelCommandLine=!nfsroot
-
 [Network]
 INTERFACE_ADDRESS
-
 [DHCPv4]
 UseHostname=false
-
 EOF
-			sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-			sed -i "s/INTERFACE_ADDRESS/DHCP=v4/g" "/tmp/${array[$i]}.network"
-			;;
-		[3]* )
-
-			cat << 'EOF' > /tmp/${array[$i]}.network
-[Match]
-Nane=INTERFACE_NAME
-KernelCommandLine=!nfsroot
-
-[Network]
-INTERFACE_ADDRESS
-
-EOF
-			sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-			sed -i "s/INTERFACE_ADDRESS/Address=0.0.0.0/g" "/tmp/${array[$i]}.network"
-			;;
-		* )
-			echo -e "Please select a valid configuration."
-			;;
-	esac
+		sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+		sed -i "s/INTERFACE_ADDRESS/DHCP=v4/g" "/tmp/${array[$i]}.network"
+		;;
+	* )
+		echo -e "Please select a valid configuration."
+		;;
+esac
 }
 
-function lan_interface_file() {
-	read -p "Enter the LAN IP Address with subnet mask: " LAN_IP
-	cat << 'EOF' > /tmp/${array[$i]}.network
+function wan_interface_file {
+cat << 'EOF' > /tmp/${array[$i]}.network
 [Match]
 Name=INTERFACE_NAME
 KernelCommandLine=!nfsroot
-
 [Network]
 INTERFACE_ADDRESS
-
 EOF
 
 sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-sed -i "s/INTERFACE_ADDRESS/Address=$LAN_IP/g" "/tmp/${array[$i]}.network"
+sed -i "s/INTERFACE_ADDRESS/Address=0.0.0.0/g" "/tmp/${array[$i]}.network"
 }
 
+function lan_interface_file {
+cat << 'EOF' > /tmp/${array[$i]}.network
+[Match]
+Name=INTERFACE_NAME
+KernelCommandLine=!nfsroot
+[Network]
+INTERFACE_ADDRESS
+EOF
+
+sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+sed -i "s/INTERFACE_ADDRESS/Address=0.0.0.0/g" "/tmp/${array[$i]}.network"
+}
+
+function bridge_interface_file () {
+cat << 'EOF' > /tmp/br$1.network
+[NetDev]
+Name=brx
+Kind=bridge
+EOF
+
+sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
+}
+
+function wan_bridge_interface_file () {
+cat << 'EOF' > /tmp/${array[$i]}.network
+[Match]
+Name=INTERFACE_NAME
+[Network]
+Bridge=brx
+EOF
+
+sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
+}
+
+function lan_bridge_interface_file () {
+cat << 'EOF' > /tmp/${array[$i]}.network
+[Match]
+Name=INTERFACE_NAME
+[Network]
+Bridge=brx
+EOF
+
+sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
+}
+
+## Clean up
 if [ -f "/tmp/*.network" ]; then
 	rm -rf /tmp/*.network
 fi
 
 echo
+echo
 interface_spec
 echo
 read -p "Enter the number of the interface you wish to configure " NUM
+echo
 for ((i=0; i<=${#array[@]}; i+=1)); do
     case $NUM in
-        [$(($i+1))]* ) read -p "Do you want to configure it as WAN or LAN: " CHOICE
-		       if [ $CHOICE == "WAN" ]; then
-		           sudo /bin/rm -rf /etc/systemd/network/en.network
-			   wan_interface_file
-			   sudo /bin/cp /tmp/${array[$i]}.network /etc/systemd/network
-			   sudo /bin/systemctl restart systemd-networkd
-		       elif [ $CHOICE == "LAN" ]; then
-			   sudo /bin/rm -rf /etc/systemd/network/en.network
-		           lan_interface_file
-			   sudo /bin/cp /tmp/${array[$i]}.network /etc/systemd/network
-			   sudo /bin/systemctl restart systemd-networkd
-		       else
-		           echo ""
+        [$(($i+1))]* ) echo "Type WAN or wan for WAN Interface"
+		       echo "Type LAN or lan for LAN Interface"
+		       echo "Type MGMT or mgmt for Management Interface"
+		       echo "Type WANBR or wnabr for WAN Bridge"
+		       echo "Type LANBR or lanbr for LAN BRidge"
+		       read -p "Do you want to configure it as WAN/LAN or MANAGEMENT INT: " CHOICE
+		       if [[ $CHOICE == "WAN" || $CHOICE == "wan" ]]; then
+		            sudo /bin/rm -rf /etc/systemd/network/en.network
+			    wan_interface_file
+			    sudo /bin/cp /tmp/${array[$i]}.network /etc/systemd/network/${array[$i]}wan$i.network
+			    sudo /bin/systemctl restart systemd-networkd
+			    sleep 4
+		       elif [[ $CHOICE == "LAN" || $CHOICE == "lan" ]]; then
+			    sudo /bin/rm -rf /etc/systemd/network/en.network
+		            lan_interface_file
+			    sudo /bin/cp /tmp/${array[$i]}.network /etc/systemd/network/${array[$i]}lan$i.network
+			    sudo /bin/systemctl restart systemd-networkd
+		       elif [[ $CHOICE == "MGMT" || $CHOICE == "mgmt" ]]; then
+			    sudo /bin/rm -rf /etc/systemd/network/en.network
+		            mgmt_interface_file
+			    sudo /bin/cp /tmp/${array[$i]}.network /etc/systemd/network/${array[$i]}mgmt.network
+			    sudo /bin/systemctl restart systemd-networkd
+			    MGMT_IP=`/sbin/ip -o -4 addr list ${array[$i]} | /usr/bin/awk '{print $4}' | /usr/bin/cut -d/ -f1`
+		       elif [[ $CHOICE == "WANBR" || $CHOICE == "wanbr" ]]; then
+                            sudo /bin/rm -rf /etc/systemd/network/en.network
+			    if [[ "$INT_NAME_COUNT" == "3" ]]; then
+				    bridge_interface_file 0
+			    	    wan_bridge_interace_file 0
+			    elif [[ "$INT_NAME_COUNT" == "5" ]]; then
+				    for ((i=0; i<2; i+=1)); do
+					    bridge_interface_file $i
+				            wan_bridge_interface_file $i
+				    done
+		            elif [[ "$INT_NAME_COUNT" == "7" ]]; then
+				    for ((i=0; i<3; i+=1)); do
+					    bridge_interface_file $i
+				    	    wan_bridge_interface_file $i
+			    	    done
+			    else
+				    echo ""
+		            fi
+                            sudo /bin/cp /tmp/br*.network /etc/systemd/network
+                            sudo /bin/cp /tmp/${array[$i]}.network /etc/systemd/network/${array[$i]}wan$i.network
+			    sudo /bin/systemctl restart systemd-networkd
+		       elif [[ $CHOICE == "LANBR" || $CHOICE == "lanbr" ]]; then
+                            sudo /bin/rm -rf /etc/systemd/network/en.network
+			    if [[ "$INT_NAME_COUNT" == "3" ]]; then
+				    bridge_interface_file 0
+			    	    wan_bridge_interace_file 0
+			    elif [[ "$INT_NAME_COUNT" == "5" ]]; then
+				    for ((i=0; i<2; i+=1)); do
+					    bridge_interface_file $i
+				            wan_bridge_interface_file $i
+				    done
+		            elif [[ "$INT_NAME_COUNT" == "7" ]]; then
+				    for ((i=0; i<3; i+=1)); do
+					    bridge_interface_file $i
+				    	    wan_bridge_interface_file $i
+			    	    done
+			    else
+				    echo ""
+		            fi
+                            sudo /bin/cp /tmp/br*.network /etc/systemd/network
+                            sudo /bin/cp /tmp/${array[$i]}.network /etc/systemd/network/${array[$i]}lan$i.network
+			    sudo /bin/systemctl restart systemd-networkd
+			    echo ""
+			    
 		       fi
+		       break
 	  	       ;;
 		* )
+		       echo "Invalid Entry "
+		       exit 1
 		       ;;
     esac
 done
+
+## Clean up
+if [ -f "/tmp/*.network" ]; then
+	rm -rf /tmp/*.network
+fi
+
