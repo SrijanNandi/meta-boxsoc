@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 INT_NAME=`sudo /sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/awk '{ sub(/^[ \t]+/, ""); print }' | /usr/bin/sort`
 INT_NAME_COUNT=`sudo /sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/sort | /usr/bin/wc -l`
@@ -41,10 +41,10 @@ INTERFACE_ADDRESS
 INTERFACE_GATEWAY
 INTERFACE_DNS
 EOF
-		sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-		sed -i "s~INTERFACE_ADDRESS~Address=$MGMT_IP~g" "/tmp/${array[$i]}.network"
-		sed -i "s/INTERFACE_GATEWAY/Gateway=$MGMT_GATEWAY/g" "/tmp/${array[$i]}.network"
-		sed -i "s/INTERFACE_DNS/DNS=$MGMT_DNS/g" "/tmp/${array[$i]}.network"
+		sudo sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+		sudo sed -i "s~INTERFACE_ADDRESS~Address=$MGMT_IP~g" "/tmp/${array[$i]}.network"
+		sudo sed -i "s/INTERFACE_GATEWAY/Gateway=$MGMT_GATEWAY/g" "/tmp/${array[$i]}.network"
+		sudo sed -i "s/INTERFACE_DNS/DNS=$MGMT_DNS/g" "/tmp/${array[$i]}.network"
 		;;
 	[2]* )
 		cat << 'EOF' > /tmp/${array[$i]}.network
@@ -56,8 +56,8 @@ INTERFACE_ADDRESS
 [DHCPv4]
 UseHostname=false
 EOF
-		sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-		sed -i "s/INTERFACE_ADDRESS/DHCP=v4/g" "/tmp/${array[$i]}.network"
+		sudo sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+		sudo sed -i "s/INTERFACE_ADDRESS/DHCP=v4/g" "/tmp/${array[$i]}.network"
 		;;
 	* )
 		echo -e "Please select a valid configuration."
@@ -74,8 +74,8 @@ KernelCommandLine=!nfsroot
 INTERFACE_ADDRESS
 EOF
 
-sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-sed -i "s/INTERFACE_ADDRESS/Address=0.0.0.0/g" "/tmp/${array[$i]}.network"
+sudo sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+sudo sed -i "s/INTERFACE_ADDRESS/Address=0.0.0.0/g" "/tmp/${array[$i]}.network"
 }
 
 function lan_interface_file {
@@ -87,8 +87,8 @@ KernelCommandLine=!nfsroot
 INTERFACE_ADDRESS
 EOF
 
-sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-sed -i "s/INTERFACE_ADDRESS/Address=0.0.0.0/g" "/tmp/${array[$i]}.network"
+sudo sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+sudo sed -i "s/INTERFACE_ADDRESS/Address=0.0.0.0/g" "/tmp/${array[$i]}.network"
 }
 
 function bridge_interface_file () {
@@ -98,7 +98,7 @@ Name=brx
 Kind=bridge
 EOF
 
-sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
+sudo sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
 }
 
 function wan_bridge_interface_file () {
@@ -109,8 +109,8 @@ Name=INTERFACE_NAME
 Bridge=brx
 EOF
 
-sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
+sudo sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+sudo sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
 }
 
 function lan_bridge_interface_file () {
@@ -121,13 +121,13 @@ Name=INTERFACE_NAME
 Bridge=brx
 EOF
 
-sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
-sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
+sudo sed -i "s/INTERFACE_NAME/${array[$i]}/g" "/tmp/${array[$i]}.network"
+sudo sed -i "s/Name=brx/Name=br$1/" "/tmp/br$1.network"
 }
 
 ## Clean up
 if [ -f "/tmp/*.network" ]; then
-	rm -rf /tmp/*.network
+	sudo rm -rf /tmp/*.network
 fi
 
 echo
@@ -217,6 +217,6 @@ done
 
 ## Clean up
 if [ -f "/tmp/*.network" ]; then
-	rm -rf /tmp/*.network
+	sudo rm -rf /tmp/*.network
 fi
 

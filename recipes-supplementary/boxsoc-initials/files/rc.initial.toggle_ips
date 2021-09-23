@@ -104,13 +104,13 @@ EOF
     use-emergency-flush: yes
     copy-iface: FIRST_INT
 EOF
-                        sed -i "s/- interface: FIRST_INT/- interface: ${array[$i]}/g" $TMP_FILE
-                        sed -i "s/cluster-id: FIRST_ID/cluster-id: $(expr 99 - $ITER)/g" $TMP_FILE
-                        sed -i "s/copy-iface: SECOND_INT/copy-iface: "${array[$i+1]}"/g" $TMP_FILE
-                        sed -i "s/- interface: SECOND_INT/- interface: "${array[$i+1]}"/g" $TMP_FILE
-                        eed -i "s/cluster-id: SECOND_ID/cluster-id: $(expr 99 - $ITER - 1)/g" $TMP_FILE
-                        sed -i "s/copy-iface: FIRST_INT/copy-iface: "${array[$i]}"/g" $TMP_FILE
-                        sed -i "s/threads: THREADS_COUNT/threads: $THREADS_COUNT/g" $TMP_FILE
+                        sudo sed -i "s/- interface: FIRST_INT/- interface: ${array[$i]}/g" $TMP_FILE
+                        sudo sed -i "s/cluster-id: FIRST_ID/cluster-id: $(expr 99 - $ITER)/g" $TMP_FILE
+                        sudo sed -i "s/copy-iface: SECOND_INT/copy-iface: "${array[$i+1]}"/g" $TMP_FILE
+                        sudo sed -i "s/- interface: SECOND_INT/- interface: "${array[$i+1]}"/g" $TMP_FILE
+                        sudo sed -i "s/cluster-id: SECOND_ID/cluster-id: $(expr 99 - $ITER - 1)/g" $TMP_FILE
+                        sudo sed -i "s/copy-iface: FIRST_INT/copy-iface: "${array[$i]}"/g" $TMP_FILE
+                        sudo sed -i "s/threads: THREADS_COUNT/threads: $THREADS_COUNT/g" $TMP_FILE
                         ITER=$(expr $ITER + 2)
 
                 done
@@ -122,10 +122,10 @@ EOF
                 cp -r /etc/suricata/suricata.yaml /etc/suricata/suricata.yaml.ORIG
         fi
 
-        sed -i "/AF_PACKET/ e cat /tmp/newfile.temp" $SURICATA_CONF_FILE
-        sed -i '/AF_PACKET/d' $SURICATA_CONF_FILE
-        rm -rf /tmp/suricata.temp*
-        rm -rf /tmp/newfile.temp*
+        sudo sed -i "/AF_PACKET/ e cat /tmp/newfile.temp" $SURICATA_CONF_FILE
+        sudo sed -i '/AF_PACKET/d' $SURICATA_CONF_FILE
+        sudo rm -rf /tmp/suricata.temp*
+        sudo rm -rf /tmp/newfile.temp*
 }
 
 function min_requirements_ips {
