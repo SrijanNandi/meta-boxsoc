@@ -1,8 +1,6 @@
-#!/bin/sh
-
-if [ -e /var/run/.initial_script_run ] ; then
-	:
+FILE=`sudo find /etc -name "initial"`
+if [[ $FILE == "/etc/initial" ]] ; then
 else
-	sudo sh /etc/rc.initial.config
-	sudo touch /var/run/.initial_script_run
+        sudo sh /etc/rc.initial.config
+        sudo touch /etc/initial
 fi
