@@ -7,21 +7,21 @@ trap '' 2 20
 while : ; do
 
 # Check to see if SSH is running.
-if /usr/bin/pgrep -a -F /var/run/sshd.pid sshd >/dev/null 2>&1; then
+if sudo /usr/bin/pgrep -a -F /var/run/sshd.pid sshd >/dev/null 2>&1; then
 	SSHD_OPTION=" 9) Disable Secure Shell (sshd)"
 else
 	SSHD_OPTION=" 9) Enable Secure Shell (sshd)"
 fi
 
 #Check to see if IPS Engine is running.
-if /bin/ps aux | grep "suricata" | grep -v 'grep\|vi\|vim' >/dev/null; then
+if sudo /bin/ps aux | grep "suricata" | grep -v 'grep\|vi\|vim' >/dev/null; then
 	IPS_OPTION="11) Stop IPS Engine"
 else
 	IPS_OPTION="11) Start IPS ENGINE"
 fi
 
 # Show IP and Port Information.
-INT_NAME=`/sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/awk '{ sub(/^[ \t]+/, ""); print }' | /usr/bin/sort`
+INT_NAME=`sudo /sbin/ip link | /usr/bin/awk -F: '$0 !~ "lo|vir|wl|sit|^[^0-9]"{print $2;getline}' | /usr/bin/awk '{ sub(/^[ \t]+/, ""); print }' | /usr/bin/sort`
 
 declare -a array=($(echo "$INT_NAME"))
 
@@ -94,7 +94,11 @@ case ${OPMODE} in
 	sudo sh /etc/rc.initial.toggle_sshd
 	;;
 10)     
-	sudo /usr/bin/suricata-update -c /etc/suricata/update.yaml --no-merge
+	if sudo ps aux | sudo grep "suricata" | sudo grep -v 'grep\|vi\|vim' >/dev/null; then
+		sudo /usr/bin/suricata-update -c /etc/suricata/update.yaml --no-merge >/dev/null 2>&1
+	else
+		echo "IPS Engine not running. Please start IPS Engine before updating Rules"
+	fi
 	;;
 11)     
 	sudo sh /etc/rc.initial.toggle_ips
